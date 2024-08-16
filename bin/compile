@@ -13,8 +13,18 @@ echo "Unpacking Tesseract-OCR binaries"
 mkdir -p $INSTALL_DIR
 tar -zxvf $TESSERACT_OCR_TGZ -C $INSTALL_DIR
 
+# Download the required language packs
+echo "Downloading Tesseract-OCR language packs"
+mkdir -p $INSTALL_DIR/share/tessdata
+
+for lang in $(echo $TESSERACT_OCR_LANGUAGES | tr "," "\n")
+do
+  wget "https://github.com/tesseract-ocr/tessdata/raw/main/$lang.traineddata" -P "$INSTALL_DIR/share/tessdata/"
+done
+
 echo "Building runtime environment for Tesseract-OCR"
 mkdir -p $BUILD_DIR/.profile.d
 echo "export PATH=\"$TESSERACT_OCR_DIR/bin:\$PATH\"" > $ENVSCRIPT
 echo "export LD_LIBRARY_PATH=\"$TESSERACT_OCR_DIR/lib:\$LD_LIBRARY_PATH\"" >> $ENVSCRIPT
 echo "export TESSDATA_PREFIX=\"$TESSERACT_OCR_DIR/share/tessdata\"" >> $ENVSCRIPT
+
